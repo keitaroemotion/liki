@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 wiki_dir = "/usr/local/etc/liki/pages"
 
 def makeDirs(directory):
@@ -16,9 +17,19 @@ def getDirectory(rootdir, folder):
 def getPage(term):
     return addChild(getDirectory(wiki_dir, term[0]), term)
 
+def writeToFile(page, text, mode="a"):
+    f = open(page, mode)
+    f.write(text + "\n")
+    f.close
+
+
 # create page file
-def createPage(term):
-    print(getPage(term))
+def createPage():
+    sys.stdout.write("word: ")
+    page = getPage(raw_input())
+    sys.stdout.write("text: ")
+    writeToFile(page, raw_input())
+      
 
 # edit page file
 
@@ -29,4 +40,4 @@ def createPage(term):
 # grep pages
 
 
-createPage("cbasap")
+createPage()
