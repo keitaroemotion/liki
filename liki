@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+import os
+wiki_dir = "/usr/local/etc/liki/pages"
+
+def makeDirs(directory):
+    if(not os.path.exists(directory)):
+        os.makedirs(directory)
+    return directory
+
+def addChild(node, term):
+    return (node + "/{0}").format(term)
+
+def getDirectory(rootdir, folder):
+    return makeDirs(addChild(rootdir, folder))  
+
+def getPage(term):
+    return addChild(getDirectory(wiki_dir, term[0]), term)
+
+# create page file
+def createPage(term):
+    print(getPage(term))
+
+# edit page file
+
+# link page file
+
+# list pages with key
+
+# grep pages
+
+
+createPage("cbasap")
