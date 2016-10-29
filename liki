@@ -22,13 +22,15 @@ def writeToFile(page, text, mode="a"):
     f.write(text + "\n")
     f.close
 
+def makeText(text, addition, message=""):
+    sys.stdout.write(message)
+    return text if (addition == "fin") else makeText(text + addition + "\n", raw_input())
 
 # create page file
 def createPage():
     sys.stdout.write("word: ")
     page = getPage(raw_input())
-    sys.stdout.write("text: ")
-    writeToFile(page, raw_input())
+    writeToFile(page, makeText("", "", "text[type fin at EOF]: \n"))
       
 
 # edit page file
