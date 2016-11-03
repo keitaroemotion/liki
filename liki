@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import subprocess
 from os import listdir
 
 wiki_dir = "/usr/local/etc/liki/pages"
@@ -19,6 +20,9 @@ def getDirectory(rootdir, folder):
 def getPage(term):
     return addChild(getDirectory(wiki_dir, term[0]), term)
 
+def useVimToEditFile(page):
+    subprocess.call(['vim', page])
+
 def writeToFile(page, text, mode="a"):
     f = open(page, mode)
     f.write(text + "\n")
@@ -28,9 +32,16 @@ def makeText(text, addition, message=""):
     sys.stdout.write(message)
     return text if (addition == "fin") else makeText(text + addition + "\n", raw_input())
 
+def isKeywordBlank(keyword):
+    return keyword == ""
+
+def listRelevantPagesAndFindPage(result_list):
+    print(result_list if len(result_list) > 0 else "Nothing")
+    findPage("", result_list)
+
 # look for page file
-def findPage(keyword=""):
-    if(keyword == ""):
+def findPage(keyword="", result_list=[]):
+    if(isKeywordBlank(keyword)):
       sys.stdout.write("[find] word: ")
       keyword = raw_input()
 
@@ -38,19 +49,34 @@ def findPage(keyword=""):
 
     {
         True  : (lambda x : showPage(x[0])),
-        False : (lambda x : findPage())
+        False : (lambda x : listRelevantPagesAndFindPage(x))
     }[len(result_list) == 1](result_list)
 
 def showPage(page):
     f = open(getPage(page), "r")
+    print("")
+    print("[" + page + "]")
+    print("")
     print(f.read())
 
+
+def editPage(keyword=""):
+    createPage(keyword, False)
+
 # create page file
-def createPage():
-    sys.stdout.write("[create] word: ")
-    page = getPage(raw_input())
-    writeToFile(page, makeText("", "", "text[type fin at EOF]: \n"))
-      
+def createPage(keyword="", isCreation=True):
+    if(isKeywordBlank(keyword)):
+        sys.stdout.write("["+ ("create" if isCreation else "edit") + "] word: ")
+        page = getPage(raw_input())
+    if(isCreation):    
+         writeToFile(page, makeText("", "", "text[type fin at EOF]: \n"))
+    else:
+         useVimToEditFile(page)
+     
+
+def getArgument(index): 
+    return sys.argv[index] if len(sys.argv) > index else ''
+
 # edit page file
 
 # link page file
@@ -66,14 +92,16 @@ def createPage():
 if(len(sys.argv) < 2):
   print("you need argument")  
   print("")  
-  print("[find]   : find page")  
-  print("[create] : create page\n")  
+  print("[read]   : read page")  
+  print("[make] : create page\n")  
+  print("[edit] : edit page\n")  
 
   sys.exit()   
 
 # dispatch execution function
 {
-  "find"   : findPage,
-  "create" : createPage
-}[sys.argv[1]]()
+  "read" : findPage,
+  "make" : createPage,
+  "edit" : editPage
+}[sys.argv[1]](getArgument(2))
 
