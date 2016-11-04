@@ -52,13 +52,21 @@ def findPage(keyword="", result_list=[]):
         False : (lambda x : listRelevantPagesAndFindPage(x))
     }[len(result_list) == 1](result_list)
 
+def puts(line):
+    print(line)
+    return line
+
+
 def showPage(page):
     f = open(getPage(page), "r")
     print("")
     print("[" + page + "]")
     print("")
-    print(f.read())
-
+    lines = [puts(line) for line in f]
+    f.close()
+    sys.stdout.write("open links? [y/n]: ")
+    if( raw_input() == 'y'):
+      [subprocess.call(['open', str(line).strip()]) for line in lines if line.startswith("http")]
 
 def editPage(keyword=""):
     createPage(keyword, False)
